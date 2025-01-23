@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ request.user.username }}</h1>
+    <a href="{% url 'logout' %}">Logout</a>
+
+    <hr>
+
+    <h2>Find New Contacts</h2>
+    <form method="GET" action="{% url 'dashboard' %}">
+        <input type="text" name="search" placeholder="Search users..." value="{{ search_query }}">
+        <button type="submit">Search</button>
+    </form>
+    {% if search_results %}
+        <ul>
+            {% for user in search_results %}
+                <li>
+                    {{ user.username }}
+                    <form action="{% url 'add_contact' user.username %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Add Contact</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif search_query %}
+        <p>No users found for "{{ search_query }}"</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>Your Contacts</h2>
+    <ul>
+        {% for contact in contacts %}
+            <li>
+                <a href="{% url 'chat' contact.contact_user.username %}">{{ contact.contact_user.username }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
